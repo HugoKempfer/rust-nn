@@ -11,7 +11,7 @@ pub mod utils;
 #[derive(Serialize, Deserialize)]
 pub struct Network {
     inputs_nb: usize,
-    outputs_nb: usize,
+    pub outputs_nb: usize,
     hiddens_nb: usize,
     learning_rate: f64,
     hidden_weight: DMatrix<f64>,
@@ -32,10 +32,16 @@ fn init_layer_weight_values(layer_size: usize, previous_layer_size: usize) -> Ve
 
 ///https://en.wikipedia.org/wiki/Sigmoid_function
 fn sigmoid(value: f64) -> f64 {
-    1.0_f64 / (1.0_f64.powf(-1.0_f64 * value))
+    1.0_f64 / (1.0 + std::f64::consts::E.powf(-1.0_f64 * value))
+    //1.0_f64 / (1.0 + 1.0_f64.powf(-1.0_f64 * value))
 }
 
 fn sigmoid_derivative(weights: &DMatrix<f64>) -> DMatrix<f64> {
+    //let one_matrix: DMatrix<f64> = DMatrix::from_vec(
+    //    weights.nrows(),
+    //    1,
+    //    vec![std::f64::consts::E; weights.nrows()],
+    //);
     let one_matrix: DMatrix<f64> =
         DMatrix::from_vec(weights.nrows(), 1, vec![1.0; weights.nrows()]);
 
@@ -74,9 +80,9 @@ impl Network {
 
     /// Proceed to one forward pass to predict the output values according to the
     /// model weights
-    pub fn predict(&self, inputs: Vec<f64>) -> Result<DMatrix<f64>, String> {
+    pub fn predict(&self, inputs: &Vec<f64>) -> Result<DMatrix<f64>, String> {
         //Transpose the input values in an input matrix
-        let input_matrix = DMatrix::from_vec(inputs.len(), 1, inputs);
+        let input_matrix = DMatrix::from_vec(inputs.len(), 1, (&inputs).to_vec());
         Ok(self.forward_propagate(&input_matrix))
     }
 
