@@ -1,7 +1,7 @@
-use mnist::{Mnist, MnistBuilder, NormalizedMnist};
-use pbr::{MultiBar, ProgressBar};
+use clap::{App, Arg, Clap};
+use mnist::{Mnist, MnistBuilder};
+use pbr::ProgressBar;
 use rust_nn::Network;
-use std::convert::TryInto;
 
 fn train_dataset(net: &mut Network, dataset: &Mnist) {
     let (trn_size, rows, cols) = (50_000_u32, 28, 28);
@@ -28,7 +28,7 @@ fn train_dataset(net: &mut Network, dataset: &Mnist) {
                 inputs.push((((*pixel as f64 / 255.0) * 0.99) + 0.01) as f64);
             }
             net.train(&inputs, &targets).expect("damn");
-            current_offset += (28 * 28);
+            current_offset += 28 * 28;
             if progress_bar_stepper == 1000 {
                 progress_bar.add(1000);
                 progress_bar_stepper = 0;
@@ -75,7 +75,35 @@ fn test_model(nn: &Network, dataset: &Mnist) {
 }
 
 fn main() {
+    let mut app = App::new("Rust NN for MNIST")
+        .author("Hugo Kempfer <hugkempf@gmail.com>")
+        .about("Demonstration of the multilayer perceptron usage for the MNIST handwritten digits dataset.")
+        .arg(Arg::new("train").about("Train the model.").short('t').takes_value(false).required_unless_present("predict"))
+        .arg(Arg::new("hidden").about("Number of hidden nodes to use").short('h').default_value("100").takes_value(true))
+        .arg(Arg::new("rate").about("Learning rate value").short('r').default_value("0.1").takes_value(true))
+        .arg(Arg::new("predict").about("Use a model to predict the test image set").short('p').takes_value(false).required_unless_present("train"))
+        .arg(Arg::new("file").about("Model file to use (RON format)").short('f').default_missing_value("./model.ron").takes_value(true));
+    let args = app.get_matches();
     let (trn_size, rows, cols) = (50_000_u32, 28, 28);
+
+    let mut nn = if args.is_present("file") && !args.is_present("train") {
+        match Network::read_from_file(args.value_of("file").unwrap()) {
+            Ok(net) => net,
+            Err(err) => {
+                panic!("Error while opening model file: {}", err);
+            }
+        }
+    } else {
+        Network::new(
+            rows * cols,
+            10,
+            args.value_of("hidden").unwrap().parse().unwrap(),
+            args.value_of("rate")
+                .unwrap()
+                .parse()
+                .expect("Invalid learning rate format"),
+        )
+    };
     let dataset = MnistBuilder::new()
         .download_and_extract()
         .label_format_digit()
@@ -83,10 +111,17 @@ fn main() {
         .validation_set_length(10_000)
         .test_set_length(10_000)
         .finalize();
-    let mut nn = Network::new(28 * 28, 10, 100, 0.1);
-    //let mut nn = Network::read_from_file(&"./model.ron".to_string()).unwrap();
-    train_dataset(&mut nn, &dataset);
-    test_model(&nn, &dataset);
-    nn.save_to_file(&"model.ron".to_string())
-        .expect("Can't save to file")
+    if args.is_present("train") || (args.is_present("predict") && !args.is_present("file")) {
+        println!("Training a network with");
+        train_dataset(&mut nn, &dataset);
+        println!("Training done.");
+    }
+    if args.is_present("predict") {
+        test_model(&nn, &dataset);
+    }
+    if args.is_present("file") && args.is_present("train") {
+        let filename = args.value_of("file").unwrap();
+        nn.save_to_file(filename).expect("Can't save to file");
+        println!("Model saved under {}", filename);
+    }
 }
