@@ -1,4 +1,4 @@
-use clap::{App, Arg, Clap};
+use clap::{App, AppSettings, Arg, Clap};
 use mnist::{Mnist, MnistBuilder};
 use pbr::ProgressBar;
 use rust_nn::Network;
@@ -77,6 +77,8 @@ fn test_model(nn: &Network, dataset: &Mnist) {
 fn main() {
     let mut app = App::new("Rust NN for MNIST")
         .author("Hugo Kempfer <hugkempf@gmail.com>")
+        .setting(AppSettings::ColorAlways)
+        .setting(AppSettings::ArgRequiredElseHelp)
         .about("Demonstration of the multilayer perceptron usage for the MNIST handwritten digits dataset.")
         .arg(Arg::new("train").about("Train the model.").short('t').takes_value(false).required_unless_present("predict"))
         .arg(Arg::new("hidden").about("Number of hidden nodes to use").short('h').default_value("100").takes_value(true))
