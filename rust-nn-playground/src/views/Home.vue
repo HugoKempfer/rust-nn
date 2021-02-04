@@ -15,7 +15,7 @@ import { RustnnType } from "@/main";
 })
 export default class Home extends Vue {
   wow = 0;
-  rustnn: typeof RustnnType = inject("rustnn") as typeof RustnnType;
+  rustnn: RustnnType = inject("rustnn") as RustnnType;
   network = this.rustnn.create_network(28 * 28, 10, 200, 0.1);
 
   created(): void {
