@@ -1,3 +1,6 @@
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [package]
 name = "rust-nn"
 version = "0.1.0"
@@ -8,9 +11,18 @@ edition = "2018"
 
 [dependencies]
 nalgebra = {version = "0.24.0", features = ["serde-serialize"]}
-rand = "0.8.3"
 serde = {version = "1.0.123", features = ["derive"]}
 ron = "0.6.4"
-mnist = {version = "0.4.1", features = ["download"]}
-pbr = "1.0.4"
+wasm-bindgen = "0.2"
+
+[target. 'cfg(target_arch = "x86_64")' .dependencies]
+rand = "0.8.3"
 clap = "3.0.0-beta.2"
+pbr = "1.0.4"
+mnist = { version = "0.4.1", features = ['download'] }
+
+[target. 'cfg(target_arch = "wasm32")' .dependencies]
+rand = {version = "0.8.3"}
+getrandom = {version = "0.2", features =["js"]}
+stdweb = "0.4.20"
+console_error_panic_hook = { version = "0.1.1", optional = true }

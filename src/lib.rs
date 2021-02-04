@@ -1,13 +1,12 @@
 use std::convert::TryInto;
-use std::ops::Add;
 
-use nalgebra::{DMatrix, DimAdd, DimMul};
+use nalgebra::DMatrix;
 use rand::distributions::Uniform;
 use rand::{thread_rng, Rng};
 use serde::{Deserialize, Serialize};
+use wasm_bindgen::prelude::*;
 
-pub mod utils;
-
+#[wasm_bindgen]
 #[derive(Serialize, Deserialize)]
 pub struct Network {
     inputs_nb: usize,
@@ -17,6 +16,9 @@ pub struct Network {
     hidden_weight: DMatrix<f64>,
     output_weights: DMatrix<f64>,
 }
+
+pub mod utils;
+pub mod wasm;
 
 fn init_layer_weight_values(layer_size: usize, previous_layer_size: usize) -> Vec<f64> {
     let mut rng = thread_rng();
@@ -33,15 +35,9 @@ fn init_layer_weight_values(layer_size: usize, previous_layer_size: usize) -> Ve
 ///https://en.wikipedia.org/wiki/Sigmoid_function
 fn sigmoid(value: f64) -> f64 {
     1.0_f64 / (1.0 + std::f64::consts::E.powf(-1.0_f64 * value))
-    //1.0_f64 / (1.0 + 1.0_f64.powf(-1.0_f64 * value))
 }
 
 fn sigmoid_derivative(weights: &DMatrix<f64>) -> DMatrix<f64> {
-    //let one_matrix: DMatrix<f64> = DMatrix::from_vec(
-    //    weights.nrows(),
-    //    1,
-    //    vec![std::f64::consts::E; weights.nrows()],
-    //);
     let one_matrix: DMatrix<f64> =
         DMatrix::from_vec(weights.nrows(), 1, vec![1.0; weights.nrows()]);
 
@@ -103,19 +99,15 @@ impl Network {
         let output_error: DMatrix<f64> = &target_matrix - &hidden_outputs;
         let hidden_error = &self.output_weights.transpose() * &output_error;
 
-        let tmp = (output_error.component_mul(&sigmoid_derivative(&hidden_outputs))
-            * &hidden_inputs.transpose())
-            .scale(self.learning_rate);
+        self.output_weights = self.output_weights.clone()
+            + (output_error.component_mul(&sigmoid_derivative(&hidden_outputs))
+                * &hidden_inputs.transpose())
+                .scale(self.learning_rate);
 
-        let output_weights_update = self.output_weights.clone() + tmp;
-
-        let hidden_weights_update = self.hidden_weight.clone()
+        self.hidden_weight = self.hidden_weight.clone()
             + ((hidden_error.component_mul(&sigmoid_derivative(&hidden_inputs))
                 * input_matrix.transpose())
             .scale(self.learning_rate));
-
-        self.hidden_weight = hidden_weights_update;
-        self.output_weights = output_weights_update;
         Ok(())
     }
 }

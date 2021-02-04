@@ -23,12 +23,12 @@ fn train_dataset(net: &mut Network, dataset: &Mnist) {
                 }
             }
             inputs.clear();
-            let slice_end = current_offset + (28 * 28);
+            let slice_end = current_offset + (rows * cols);
             for pixel in &dataset.trn_img[current_offset..slice_end] {
                 inputs.push((((*pixel as f64 / 255.0) * 0.99) + 0.01) as f64);
             }
             net.train(&inputs, &targets).expect("damn");
-            current_offset += 28 * 28;
+            current_offset += rows * cols;
             if progress_bar_stepper == 1000 {
                 progress_bar.add(1000);
                 progress_bar_stepper = 0;
@@ -47,7 +47,7 @@ fn test_model(nn: &Network, dataset: &Mnist) {
 
     for label in &dataset.tst_lbl {
         inputs.clear();
-        let slice_end = current_offset + (28 * 28);
+        let slice_end = current_offset + (rows * cols);
         for pixel in &dataset.tst_img[current_offset..slice_end] {
             inputs.push((((*pixel as f64 / 255.0) * 0.99) + 0.01) as f64);
         }
@@ -69,7 +69,7 @@ fn test_model(nn: &Network, dataset: &Mnist) {
             }
             Err(_) => eprintln!("Damn err"),
         }
-        current_offset += 28 * 28;
+        current_offset += rows * cols;
     }
     println!("Score => {}", score);
 }
