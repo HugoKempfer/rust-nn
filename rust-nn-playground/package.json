@@ -8,8 +8,12 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "babel-loader": "^8.2.2",
+    "class-transformer": "^0.3.2",
     "core-js": "^3.6.5",
+    "easy-mnist": "^1.0.1",
+    "reflect-metadata": "^0.1.13",
     "rust-nn": "../pkg",
     "vue": "^3.0.0",
     "vue-class-component": "^8.0.0-0",
