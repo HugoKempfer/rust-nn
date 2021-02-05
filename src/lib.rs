@@ -44,7 +44,9 @@ fn sigmoid_derivative(weights: &DMatrix<f64>) -> DMatrix<f64> {
     weights.component_mul(&(one_matrix - weights))
 }
 
+#[wasm_bindgen]
 impl Network {
+    #[wasm_bindgen(constructor)]
     pub fn new(inputs_nb: usize, outputs_nb: usize, hiddens_nb: usize, learning_rate: f64) -> Self {
         Self {
             inputs_nb,
@@ -63,7 +65,9 @@ impl Network {
             ),
         }
     }
+}
 
+impl Network {
     /// Immutably forward propagate and return output matrix
     fn forward_propagate(&self, inputs: &DMatrix<f64>) -> DMatrix<f64> {
         //Calculate the hidden layer input values from input weights and input values
@@ -87,6 +91,7 @@ impl Network {
             return Err("Provided input size differs from model's one".to_string());
         }
         //Transpose the input values in an input matrix
+        let wow = [0.1_f64; 10];
         let input_matrix = DMatrix::from_vec(inputs.len(), 1, inputs.to_vec());
         let target_matrix = DMatrix::from_vec(targets.len(), 1, targets.to_vec());
 
