@@ -24,6 +24,7 @@
       "esnext",
       "dom",
       "dom.iterable",
+      "webworker",
       "scripthost"
     ]
   },

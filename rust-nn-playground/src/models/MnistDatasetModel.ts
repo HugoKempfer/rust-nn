@@ -10,7 +10,7 @@ import axios, { AxiosResponse } from "axios";
 //  image: Array<number>;
 //}
 
-interface MnistImage {
+export interface MnistImage {
   label: Uint8Array;
   image: Float64Array;
 }
