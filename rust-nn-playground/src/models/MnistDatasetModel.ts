@@ -1,14 +1,18 @@
-import { plainToClass } from "class-transformer";
 import axios, { AxiosResponse } from "axios";
 
-class MnistImage {
-  constructor(label: number[], bitmap: number[]) {
-    this.label = label;
-    this.image = bitmap;
-  }
+//class MnistImage {
+//  constructor(label: number[], bitmap: number[]) {
+//    this.label = label;
+//    this.image = bitmap;
+//  }
+//
+//  label: Array<number>;
+//  image: Array<number>;
+//}
 
-  label: Array<number>;
-  image: Array<number>;
+interface MnistImage {
+  label: Uint8Array;
+  image: Float64Array;
 }
 
 export async function buildMnist(
@@ -23,7 +27,8 @@ export async function buildMnist(
     const file: AxiosResponse = await axios.get(
       `datasets/mnist/mnist_batch_${fileNb}.json`
     );
-    const images = plainToClass(MnistImage, file.data.data as MnistImage[]);
+    //const images = plainToClass(MnistImage, file.data.data as MnistImage[]);
+    const images = file.data.data as MnistImage[];
     console.log(images.length);
     let fileIt = 0;
     while (trainImages.length < trainSize) {
