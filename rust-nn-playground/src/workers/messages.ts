@@ -8,6 +8,8 @@ export enum MessageType {
 
 export interface TrainSuccess {
   network: unknown;
+  correctPredictNb: number;
+  errorPredictNb: number;
 }
 
 export interface TrainUpdate {

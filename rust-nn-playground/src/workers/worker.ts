@@ -1,10 +1,8 @@
 // eslint-disable-file
 // eslint-disable-next-line @typescript-eslint/camelcase
 import { MessageType, MnistMessage, TrainNetwork } from "@/workers/messages";
-const ctx: Worker = self as any;
 
-// Post data to parent thread
-//ctx.postMessage("damn");
+const ctx: Worker = self as any;
 
 async function trainNetwork(params: TrainNetwork) {
   const rustnn = await import("rust-nn");
@@ -34,7 +32,41 @@ async function trainNetwork(params: TrainNetwork) {
     });
     progressUpdateStepper = 0;
   }
-  ctx.postMessage({ type: MessageType.TRAIN_SUCCESS, value: { network } });
+
+  // Test network
+  ctx.postMessage({
+    type: MessageType.TRAIN_UPDATE,
+    value: { message: "Testing network", incrImage: 0 }
+  });
+  let correct = 0;
+  let error = 0;
+
+  for (const image of params.testImages) {
+    const res = rustnn.predict_for_mnist_dataset(
+      network,
+      image.image
+    );
+    let highest = 0;
+    let highestValue = 0;
+    let it = 0;
+    for (const val of res) {
+      if (val > highestValue) {
+        highestValue = val;
+        highest = it;
+      }
+      ++it;
+    }
+    if (highest == image.label.findIndex(value => value == 1)) {
+      ++correct;
+    } else {
+      ++error;
+    }
+
+    ctx.postMessage({
+      type: MessageType.TRAIN_SUCCESS,
+      value: { network: network, correctPredictNb: correct, errorPredictNb: error }
+    });
+  }
 }
 
 // Respond to message from parent thread
@@ -44,4 +76,3 @@ ctx.addEventListener("message", async event => {
     await trainNetwork(msg.value as TrainNetwork);
   }
 });
-

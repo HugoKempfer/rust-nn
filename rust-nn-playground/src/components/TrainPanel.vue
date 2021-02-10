@@ -45,6 +45,10 @@
       >
       </b-progress>
     </div>
+    <p v-if="testResult">
+      {{ testResult.correct }} images predicted correctly for
+      {{ testResult.error }} errors
+    </p>
   </div>
 </template>
 
@@ -76,6 +80,7 @@ export default class TrainPanel extends Vue {
     testImages: MnistImage[];
   } | null = null;
   network: Network | null = null;
+  testResult: { correct: number; error: number } | null = null;
 
   async refreshDataset() {
     if (
@@ -91,6 +96,7 @@ export default class TrainPanel extends Vue {
 
   async doTrain() {
     this.progressBarValue = 0;
+    this.testResult = null;
     this.isTraining = true;
     await this.refreshDataset();
     // eslint-disable-next-line no-undef
@@ -118,6 +124,10 @@ export default class TrainPanel extends Vue {
         // eslint-disable-next-line no-undef
         case MessageType.TRAIN_SUCCESS:
           this.network = (msg.value as TrainSuccess).network as Network;
+          this.testResult = {
+            correct: (msg.value as TrainSuccess).correctPredictNb,
+            error: (msg.value as TrainSuccess).errorPredictNb
+          };
           if (this.trainCallback) {
             this.trainCallback(this.network as Network);
           }
