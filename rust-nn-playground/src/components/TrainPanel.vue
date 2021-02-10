@@ -53,6 +53,13 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { Network } from "rust-nn";
 import { buildMnist } from "@/models/MnistDatasetModel";
 import { MnistImage } from "@/models/MnistDatasetModel";
+import { worker } from "@/workers";
+import {
+  MessageType,
+  MnistMessage,
+  TrainSuccess,
+  TrainUpdate
+} from "@/workers/messages";
 
 @Component({})
 export default class TrainPanel extends Vue {
@@ -78,35 +85,45 @@ export default class TrainPanel extends Vue {
       return;
     }
     this.trainStepText = "Processing dataset";
-    this.dataset = await buildMnist(10000, 100);
+    this.dataset = await buildMnist(this.trainSize, this.testSize);
   }
 
   async doTrain() {
     this.progressBarValue = 0;
     this.isTraining = true;
-    await this.refreshDataset();
-    this.trainStepText = "Building Neural Network";
-    this.network = new this.$rustnn.Network(28 * 28, 10, this.hiddenNb, 0.1);
-    this.trainStepText = "Training Neural Network";
 
-    let progressUpdateStepper = 0;
-
-    for (const image of this.dataset?.trainImages ?? []) {
-      this.$rustnn.train_for_mnist_dataset(
-        this.network!,
-        image.image,
-        image.label
-      );
-      ++progressUpdateStepper;
-      if (progressUpdateStepper >= 500) {
-        this.progressBarValue += 500;
-        progressUpdateStepper = 0;
+    // eslint-disable-next-line no-undef
+    worker.postMessage({
+      // eslint-disable-next-line no-undef
+      type: MessageType.TRAIN_NETWORK,
+      data: {
+        hiddenNb: this.hiddenNb,
+        learningRate: 0.1,
+        trainSize: this.trainSize,
+        testSize: this.testSize,
+        updateEveryNImage: 50
       }
-    }
-    if (this.trainCallback) {
-      this.trainCallback(this.network);
-    }
-    this.isTraining = false;
+    });
+    // eslint-disable-next-line no-undef
+    worker.onmessage = ev => {
+      const msg = ev.data as MnistMessage;
+      switch (msg.type) {
+        // eslint-disable-next-line no-undef
+        case MessageType.TRAIN_UPDATE:
+          this.trainStepText = (msg.value as TrainUpdate).message;
+          this.progressBarValue += (msg.value as TrainUpdate).incrImage;
+          break;
+        // eslint-disable-next-line no-undef
+        case MessageType.TRAIN_SUCCESS:
+          this.network = (msg.value as TrainSuccess).network as Network;
+          if (this.trainCallback) {
+            this.trainCallback(this.network as Network);
+          }
+          this.isTraining = false;
+          this.progressBarValue = 0;
+          this.trainStepText = "";
+      }
+    };
   }
 }
 </script>

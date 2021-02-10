@@ -18,7 +18,6 @@
 </template>
 
 <script lang="ts">
-import { buildMnist } from "@/models/MnistDatasetModel";
 import { Component, Vue } from "vue-property-decorator";
 import TrainPanel from "@/components/TrainPanel.vue";
 import DrawPanel from "@/components/DrawPanel.vue";
