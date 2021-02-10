@@ -1,3 +1,5 @@
+import { MnistImage } from "@/models/MnistDatasetModel";
+
 export enum MessageType {
   TRAIN_NETWORK,
   TRAIN_SUCCESS,
@@ -16,8 +18,8 @@ export interface TrainUpdate {
 export interface TrainNetwork {
   hiddenNb: number;
   learningRate: number;
-  trainSize: number;
-  testSize: number;
+  trainImages: MnistImage[];
+  testImages: MnistImage[];
   updateEveryNImage: number;
 }
 

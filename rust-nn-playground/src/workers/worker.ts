@@ -1,6 +1,5 @@
 // eslint-disable-file
 // eslint-disable-next-line @typescript-eslint/camelcase
-import { buildMnist } from "@/models/MnistDatasetModel";
 import { MessageType, MnistMessage, TrainNetwork } from "@/workers/messages";
 const ctx: Worker = self as any;
 
@@ -13,7 +12,6 @@ async function trainNetwork(params: TrainNetwork) {
     type: MessageType.TRAIN_UPDATE,
     value: { message: "Processing Dataset.", incrImage: 0 }
   });
-  const dataset = await buildMnist(params.trainSize, params.testSize);
   ctx.postMessage({
     type: MessageType.TRAIN_UPDATE,
     value: { message: "Building Network.", incrImage: 0 }
@@ -21,10 +19,10 @@ async function trainNetwork(params: TrainNetwork) {
   const network = new rustnn.Network(28 * 28, 10, params.hiddenNb, 0.1);
   let progressUpdateStepper = 0;
 
-  for (const image of dataset?.trainImages ?? []) {
+  for (const image of params.trainImages ?? []) {
     rustnn.train_for_mnist_dataset(network!, image.image, image.label);
     ++progressUpdateStepper;
-    if (progressUpdateStepper < 500) {
+    if (progressUpdateStepper < params.updateEveryNImage) {
       continue;
     }
     ctx.postMessage({
@@ -36,7 +34,7 @@ async function trainNetwork(params: TrainNetwork) {
     });
     progressUpdateStepper = 0;
   }
-  ctx.postMessage({ type: MessageType.TRAIN_SUCCESS, data: { network } });
+  ctx.postMessage({ type: MessageType.TRAIN_SUCCESS, value: { network } });
 }
 
 // Respond to message from parent thread

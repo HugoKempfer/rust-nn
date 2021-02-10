@@ -57,6 +57,7 @@ import { worker } from "@/workers";
 import {
   MessageType,
   MnistMessage,
+  TrainNetwork,
   TrainSuccess,
   TrainUpdate
 } from "@/workers/messages";
@@ -91,18 +92,19 @@ export default class TrainPanel extends Vue {
   async doTrain() {
     this.progressBarValue = 0;
     this.isTraining = true;
-
+    await this.refreshDataset();
     // eslint-disable-next-line no-undef
+    const trainParams: TrainNetwork = {
+      hiddenNb: this.hiddenNb,
+      learningRate: 0.1,
+      trainImages: this.dataset?.trainImages ?? [],
+      testImages: this.dataset?.testImages ?? [],
+      updateEveryNImage: 50
+    };
     worker.postMessage({
       // eslint-disable-next-line no-undef
       type: MessageType.TRAIN_NETWORK,
-      data: {
-        hiddenNb: this.hiddenNb,
-        learningRate: 0.1,
-        trainSize: this.trainSize,
-        testSize: this.testSize,
-        updateEveryNImage: 50
-      }
+      value: trainParams
     });
     // eslint-disable-next-line no-undef
     worker.onmessage = ev => {
