@@ -42,10 +42,7 @@ async function trainNetwork(params: TrainNetwork) {
   let error = 0;
 
   for (const image of params.testImages) {
-    const res = rustnn.predict_for_mnist_dataset(
-      network,
-      image.image
-    );
+    const res = rustnn.predict_for_mnist_dataset(network, image.image);
     let highest = 0;
     let highestValue = 0;
     let it = 0;
@@ -61,12 +58,15 @@ async function trainNetwork(params: TrainNetwork) {
     } else {
       ++error;
     }
-
-    ctx.postMessage({
-      type: MessageType.TRAIN_SUCCESS,
-      value: { network: network, correctPredictNb: correct, errorPredictNb: error }
-    });
   }
+  ctx.postMessage({
+    type: MessageType.TRAIN_SUCCESS,
+    value: {
+      network: network.to_ron(),
+      correctPredictNb: correct,
+      errorPredictNb: error
+    }
+  });
 }
 
 // Respond to message from parent thread

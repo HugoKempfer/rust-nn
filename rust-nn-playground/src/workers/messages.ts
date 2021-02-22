@@ -1,4 +1,5 @@
 import { MnistImage } from "@/models/MnistDatasetModel";
+import { Network } from "rust-nn";
 
 export enum MessageType {
   TRAIN_NETWORK,
@@ -7,7 +8,7 @@ export enum MessageType {
 }
 
 export interface TrainSuccess {
-  network: unknown;
+  network: string;
   correctPredictNb: number;
   errorPredictNb: number;
 }

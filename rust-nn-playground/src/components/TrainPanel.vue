@@ -123,13 +123,15 @@ export default class TrainPanel extends Vue {
           break;
         // eslint-disable-next-line no-undef
         case MessageType.TRAIN_SUCCESS:
-          this.network = (msg.value as TrainSuccess).network as Network;
+          this.network = this.$rustnn.Network.from_ron(
+            (msg.value as TrainSuccess).network
+          );
           this.testResult = {
             correct: (msg.value as TrainSuccess).correctPredictNb,
             error: (msg.value as TrainSuccess).errorPredictNb
           };
           if (this.trainCallback) {
-            this.trainCallback(this.network as Network);
+            this.trainCallback(this.network);
           }
           this.isTraining = false;
           this.progressBarValue = 0;

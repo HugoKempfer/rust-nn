@@ -10,7 +10,7 @@
           <TrainPanel :train-callback="trainCallback" />
         </div>
         <div class="column">
-          <DrawPanel />
+          <DrawPanel :network="network" />
         </div>
       </div>
     </section>
@@ -34,9 +34,6 @@ export default class Home extends Vue {
   error = 0;
   network: Network | null = null;
 
-  async created() {
-    //
-  }
   trainCallback(newModel: Network) {
     this.network = newModel;
   }
