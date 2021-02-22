@@ -14,6 +14,9 @@ nalgebra = {version = "0.24.0", features = ["serde-serialize"]}
 serde = {version = "1.0.123", features = ["derive"]}
 ron = "0.6.4"
 wasm-bindgen = "0.2"
+base64 = "0.13.0"
+image = "0.23.13"
+console_error_panic_hook = { version = "0.1.1" }
 
 [target. 'cfg(target_arch = "x86_64")' .dependencies]
 rand = "0.8.3"
@@ -25,5 +28,4 @@ mnist = { version = "0.4.1", features = ['download'] }
 rand = {version = "0.8.3"}
 getrandom = {version = "0.2", features =["js"]}
 stdweb = "0.4.20"
-console_error_panic_hook = { version = "0.1.1", optional = true }
 js-sys = "0.3.47"

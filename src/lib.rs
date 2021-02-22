@@ -4,6 +4,7 @@ use nalgebra::DMatrix;
 use rand::distributions::Uniform;
 use rand::{thread_rng, Rng};
 use serde::{Deserialize, Serialize};
+use std::panic;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -48,6 +49,7 @@ fn sigmoid_derivative(weights: &DMatrix<f64>) -> DMatrix<f64> {
 impl Network {
     #[wasm_bindgen(constructor)]
     pub fn new(inputs_nb: usize, outputs_nb: usize, hiddens_nb: usize, learning_rate: f64) -> Self {
+        panic::set_hook(Box::new(console_error_panic_hook::hook));
         Self {
             inputs_nb,
             outputs_nb,
@@ -91,7 +93,6 @@ impl Network {
             return Err("Provided input size differs from model's one".to_string());
         }
         //Transpose the input values in an input matrix
-        let wow = [0.1_f64; 10];
         let input_matrix = DMatrix::from_vec(inputs.len(), 1, inputs.to_vec());
         let target_matrix = DMatrix::from_vec(targets.len(), 1, targets.to_vec());
 

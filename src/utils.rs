@@ -2,6 +2,8 @@ use std::fs::File;
 use std::io::{ErrorKind, Read, Write};
 
 use crate::Network;
+use image::DynamicImage;
+use nalgebra::DMatrix;
 
 impl Network {
     pub fn save_to_file(&self, file_path: &str) -> Result<(), String> {
