@@ -1,6 +1,6 @@
 <template>
   <div id="signaturePad">
-    <canvas height="112px" width="112px" id="signaturePadCanva" class="box" />
+    <canvas height="112px" width="112px" id="signaturePadCanva" />
     <b-button @click="clear">Clear</b-button>
   </div>
 </template>
@@ -37,3 +37,9 @@ export default class SignaturePadComponent extends Vue {
   }
 }
 </script>
+
+<style>
+canvas {
+  border: 1px solid black;
+}
+</style>

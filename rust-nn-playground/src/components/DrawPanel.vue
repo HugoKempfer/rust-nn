@@ -1,10 +1,14 @@
 <template>
-  <div id="drawPanel">
+  <div id="drawPanel" disabled>
     <h2 class="title is-3">Test Model</h2>
+    <h3 class="subtitle is-6">Draw a digit at the center of the draw pad</h3>
     <div class="columns is-centered">
       <div class="column is-half">
-        <SignaturePad :on-draw="predict" @clear="clear" />
-        <p v-if="predicted">Predicted value = {{ predicted }}</p>
+        <SignaturePad :on-draw="predict" @clear="clear" v-if="network" />
+        <h2 v-if="!network" class="is-2">
+          You must train the network in order to test it!
+        </h2>
+        <p v-if="predicted != null">Predicted value = {{ predicted }}</p>
       </div>
     </div>
   </div>
