@@ -62,7 +62,7 @@ fn test_model(nn: &Network, dataset: &Mnist) {
                         highest = current;
                     }
                 }
-                if best == (*label).into() {
+                if best == ((*label) as usize) {
                     score += 1;
                 }
                 println!("Current {}, predicted {}", label, best);
