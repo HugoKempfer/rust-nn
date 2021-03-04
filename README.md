@@ -148,12 +148,7 @@ Note that you need the yarn or npm binary and a [Rust toolchain](https://rustup.
 
 I used a lot of articles and content to understand the basics of neural networks.
 
-The implementation of the multilayer perceptron is inspired a lot from this Go version:
-
-[Go implementation]: https://sausheong.github.io/posts/how-to-build-a-simple-artificial-neural-network-with-go/	"How to build a simple artificial neural network with Go"
-[]: https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/	"A Step by Step Backpropagation Example"
-[]: https://medium.com/@14prakash/back-propagation-is-very-simple-who-made-it-complicated-97b794c97e5c	"Back-Propagation is very simple. Who made it Complicated ?"
-[]: https://github.com/danistefanovic/build-your-own-x#build-your-own-neural-network	"Build your own X"
-
-
-
+- [How to build a simple artificial neural network with Go](https://sausheong.github.io/posts/how-to-build-a-simple-artificial-neural-network-with-go/ ) (My implementation of the multilayer perceptron is inspired a lot from this Go version)
+- [A Step by Step Backpropagation Example](https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/)
+- [Back-Propagation is very simple. Who made it Complicated ?](https://medium.com/@14prakash/back-propagation-is-very-simple-who-made-it-complicated-97b794c97e5c )
+- [Build your own X (neural networks)](https://github.com/danistefanovic/build-your-own-x#build-your-own-neural-network )
