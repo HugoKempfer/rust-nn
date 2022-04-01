@@ -1,4 +1,4 @@
-use clap::{App, AppSettings, Arg, Clap};
+use clap::{App, AppSettings, Arg};
 use mnist::{Mnist, MnistBuilder};
 use pbr::ProgressBar;
 use rust_nn::Network;
@@ -80,11 +80,11 @@ fn main() {
         .setting(AppSettings::ColorAlways)
         .setting(AppSettings::ArgRequiredElseHelp)
         .about("Demonstration of the multilayer perceptron usage for the MNIST handwritten digits dataset.")
-        .arg(Arg::new("train").about("Train the model.").short('t').takes_value(false).required_unless_present("predict"))
-        .arg(Arg::new("hidden").about("Number of hidden nodes to use").short('h').default_value("100").takes_value(true))
-        .arg(Arg::new("rate").about("Learning rate value").short('r').default_value("0.1").takes_value(true))
-        .arg(Arg::new("predict").about("Use a model to predict the test image set").short('p').takes_value(false).required_unless_present("train"))
-        .arg(Arg::new("file").about("Model file to use (RON format)").short('f').default_missing_value("./model.ron").takes_value(true));
+        .arg(Arg::new("train").help("Train the model.").short('t').takes_value(false).required_unless_present("predict"))
+        .arg(Arg::new("hidden").help("Number of hidden nodes to use").short('h').default_value("100").takes_value(true))
+        .arg(Arg::new("rate").help("Learning rate value").short('r').default_value("0.1").takes_value(true))
+        .arg(Arg::new("predict").help("Use a model to predict the test image set").short('p').takes_value(false).required_unless_present("train"))
+        .arg(Arg::new("file").help("Model file to use (RON format)").short('f').default_missing_value("./model.ron").takes_value(true));
     let args = app.get_matches();
     let (trn_size, rows, cols) = (50_000_u32, 28, 28);
 
